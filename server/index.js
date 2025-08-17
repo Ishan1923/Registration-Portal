@@ -1,4 +1,3 @@
-// server/index.js (Your existing code with the crucial addition)
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -10,13 +9,9 @@ import User from './models/User.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// This loads environment variables from your local .env file.
-// On Vercel, you will set these variables directly in the Vercel dashboard.
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
-// Configure CORS to allow requests from your frontend
-// process.env.CLIENT_URL must be set in Vercel environment variables for production
 app.use(cors({
     origin: process.env.CLIENT_URL
 }));
@@ -26,72 +21,84 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-console.log("MONGO_URI from .env:", process.env.MONGO_URI); // This will show up in Vercel logs if set
+console.log("MONGO_URI from .env:", process.env.MONGO_URI);
 
+// Efficient MongoDB connection for serverless (caching)
+let cachedDb = null;
 async function connectDB() {
+  if (cachedDb) {
+    return cachedDb;
+  }
   try {
     console.log("🔄 Attempting to connect to MongoDB...");
-    // Use the MONGO_URI from Vercel's environment variables in production
-    await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    cachedDb = conn;
     console.log('✅ MongoDB Connected');
+    return conn;
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error.message);
     process.exit(1);
   }
 }
 
-connectDB(); // Call the function to connect to the database
-
 app.get('/', (req, res) => {
   res.send('Backend is running');
 });
 
 app.post('/register', async (req, res) => {
+  await connectDB(); // Ensure DB connection (important for serverless)
+
   const { name, admissionNo, branch, phone, email } = req.body;
 
   if (!name || !admissionNo || !branch || !phone || !email) {
-    return res.json({ success: false, message: "Please fill all the fields." });
+    return res.status(400).json({ success: false, message: "Please fill all the fields." });
   }
 
   if (!/^\d{6}$/.test(admissionNo)) {
-    return res.json({ success: false, message: "Admission number must be exactly 6 digits." });
+    return res.status(400).json({ success: false, message: "Admission number must be exactly 6 digits." });
   }
 
   if (!/^\d{10}$/.test(phone)) {
-    return res.json({ success: false, message: "Phone number must be exactly 10 digits." });
+    return res.status(400).json({ success: false, message: "Phone number must be exactly 10 digits." });
   }
 
-  if (!email.includes('@')) {
-    return res.json({ success: false, message: "Email must contain '@'" });
+  // Improved email validation: must be @gmail.com or @thapar.edu
+  if (!/^([a-zA-Z0-9._%+-]+)@(gmail\.com|thapar\.edu)$/.test(email)) {
+    return res.status(400).json({ success: false, message: "Email must be a valid '@gmail.com' or '@thapar.edu' address." });
   }
 
   const existing = await User.findOne({ $or: [{ email }, { admissionNo }] });
   if (existing) {
-    return res.json({ success: false, message: "You have already registered." });
+    return res.status(409).json({ success: false, message: "You have already registered." });
   }
 
   try {
     const user = new User({ name, admissionNo, branch, phone, email });
     await user.save();
-    return res.json({ success: true, message: "Registered successfully!" });
+    return res.status(201).json({ success: true, message: "Registered successfully!" });
   } catch (err) {
     console.error('❌ Registration Error:', err.message);
-    return res.json({ success: false, message: "Registration failed. Try again later." });
+    return res.status(500).json({ success: false, message: "Registration failed. Try again later." });
   }
 });
 
-// The app.listen part is primarily for local development.
-// Vercel's serverless functions don't "listen" on a port in the traditional sense;
-// they are invoked per request. You can keep it for local testing,
-// but it won't be active on Vercel after the module.exports.
+// Centralized error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ success: false, message: "Internal server error." });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
 
-// *******************************************************************
-// CRUCIAL ADDITION FOR VERCEL SERVERLESS FUNCTIONS
-// *******************************************************************
-export default app; // For ES Modules
-// If you were using CommonJS (require/module.exports), it would be:
+// *******************************************************************// *******************************************************************
+// CRUCIAL ADDITION FOR VERCEL SERVERLESS FUNCTIONS// CRUCIAL ADDITION FOR VERCEL SERVERLESS FUNCTIONS
+// *******************************************************************// *******************************************************************
+export default app; // For ES Modulesexport default app; // For ES Modules
+// If you were using CommonJS (require/module.exports), it would be:// If you were using CommonJS (require/module.exports), it would be:
 // module.exports = app;

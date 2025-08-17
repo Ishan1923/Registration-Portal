@@ -17,7 +17,8 @@ function App() {
   // For Create React App, environment variables must start with REACT_APP_
   // In development, this will come from your .env file (e.g., REACT_APP_BACKEND_URL=http://localhost:5000)
   // In production (on Vercel), this will come from the environment variable you set in Vercel's dashboard.
-  const backendBaseUrl = process.env.REACT_APP_BACKEND_URL;
+  // const backendBaseUrl = process.env.REACT_APP_BACKEND_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   // Optional: A fallback for extreme cases, though usually not needed if .env is set up
   // if (!backendBaseUrl) {
@@ -29,7 +30,7 @@ function App() {
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors(prev => ({ ...prev, [e.target.name]: '' }));
-  };
+  }; 
 
   const validate = () => {
     const newErrors = {};
@@ -56,7 +57,7 @@ function App() {
 
     try {
       // ⭐⭐⭐ FIX: Use the environment variable for the fetch URL ⭐⭐⭐
-      const res = await fetch(`${backendBaseUrl}/register`, {
+      const res = await fetch(`${apiUrl}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
