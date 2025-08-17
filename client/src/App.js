@@ -1,4 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+// Footer component is now defined directly in this file
+function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  const footerStyle = {
+    width: '100%',
+    textAlign: 'center',
+    padding: '2rem 1rem',
+    marginTop: 'auto',
+    color: '#a1a1a6',
+    fontSize: '0.9rem',
+  };
+
+  const linkStyle = {
+    color: '#f5f5f7',
+    textDecoration: 'none',
+    fontWeight: '500',
+  };
+
+  return (
+    <footer style={footerStyle}>
+      <p>&copy; {currentYear} ISTE Student Chapter. All Rights Reserved.</p>
+      <p>
+        Developed with ❤️ in Patiala by{' '}
+        <a href="https://github.com/ishan-pathak-23" target="_blank" rel="noopener noreferrer" style={linkStyle}>
+          Ishan Pathak
+        </a>
+      </p>
+    </footer>
+  );
+}
 
 function App() {
   const [formData, setFormData] = useState({
@@ -12,295 +44,265 @@ function App() {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ⭐⭐⭐ FIX: Define backendUrl using environment variable ⭐⭐⭐
-  // For Create React App, environment variables must start with REACT_APP_
-  // In development, this will come from your .env file (e.g., REACT_APP_BACKEND_URL=http://localhost:5000)
-  // In production (on Vercel), this will come from the environment variable you set in Vercel's dashboard.
-  // const backendBaseUrl = process.env.REACT_APP_BACKEND_URL;
-  const apiUrl = process.env.REACT_APP_API_URL;
+  // This will trigger the animation once the component mounts
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
-  // Optional: A fallback for extreme cases, though usually not needed if .env is set up
-  // if (!backendBaseUrl) {
-  //   console.warn("REACT_APP_BACKEND_URL is not set. Using a fallback for development.");
-  //   backendBaseUrl = "http://localhost:5000";
-  // }
-  // ⭐⭐⭐ END FIX ⭐⭐⭐
+  // Updated backend URL
+  const backendBaseUrl = 'https://reg-portal-backend.vercel.app';
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors(prev => ({ ...prev, [e.target.name]: '' }));
-  }; 
+  };
 
   const validate = () => {
     const newErrors = {};
-
     if (!formData.name.trim()) newErrors.name = "Full name is required";
     if (!/^\d{6}$/.test(formData.admissionNo)) newErrors.admissionNo = "Admission number must be 6 digits";
     if (!formData.branch.trim()) newErrors.branch = "Branch is required";
     if (!/^\d{10}$/.test(formData.phone)) newErrors.phone = "Phone number must be 10 digits";
-    if (!formData.email.includes("@")) newErrors.email = "Email must contain '@'";
-
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "A valid email is required";
     return newErrors;
   };
-
 
   const handleSubmit = async e => {
     e.preventDefault();
     setSubmitted(true);
+    setIsSubmitting(true);
     const validationErrors = validate();
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setIsSubmitting(false);
       return;
     }
 
     try {
-      // ⭐⭐⭐ FIX: Use the environment variable for the fetch URL ⭐⭐⭐
-      const res = await fetch(`${apiUrl}/register`, {
+      // Updated endpoint to match your backend
+      const res = await fetch(`${backendBaseUrl}/api/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(formData),
       });
-      // ⭐⭐⭐ END FIX ⭐⭐⭐
 
       const data = await res.json();
 
-      if (data.success) {
-        setSuccessMessage(data.message);
-        setFormData({
-          name: '',
-          admissionNo: '',
-          branch: '',
-          phone: '',
-          email: '',
-        });
+      if (res.ok && (data.success || res.status === 200)) {
+        setSuccessMessage(data.message || "Registration successful! Welcome to ISTE!");
+        setFormData({ name: '', admissionNo: '', branch: '', phone: '', email: '' });
         setErrors({});
         setSubmitted(false);
       } else {
-        setErrors({ general: data.message });
+         setErrors({ general: data.message || data.error || "Registration failed. Please try again." });
+         setSuccessMessage('');
       }
     } catch (err) {
-      // Improved error logging for debugging network issues
-      console.error("Fetch error:", err);
-      setErrors({ general: "Something went wrong. Try again later." });
+      console.error("Registration error:", err);
+      setErrors({ general: "Network error. Please check your connection and try again." });
+      setSuccessMessage('');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const resetForm = () => {
+    setSuccessMessage('');
+    setFormData({ name: '', admissionNo: '', branch: '', phone: '', email: '' });
+    setErrors({});
+    setSubmitted(false);
+  };
+
   return (
-    <>
+    <div className={`min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white p-4`}>
       <style>{`
-/* Base styles for all screen sizes */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: linear-gradient(to bottom right, #f0faff, #e6f4ff, #ffffff);
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
-}
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-.container {
-  max-width: 500px;
-  margin: 60px auto;
-  background: white;
-  padding: 30px 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
 
-.logo {
-  width: 80px;
-  display: block;
-  margin: 0 auto 15px auto;
-}
-.logo-section {
-  text-align: center;
-  margin-bottom: 25px;
-}
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
 
-.title {
-  font-size: 22px;
-  font-weight: 600;
-  color: #003366;
-  margin-top: 10px;
-}
+        .container-loaded {
+          animation: fadeIn 0.7s ease-out;
+        }
 
-h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  font-size: 24px;
-}
+        .loading-spinner {
+          width: 16px;
+          height: 16px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: white;
+          animation: spin 1s ease-in-out infinite;
+        }
 
-label {
-  font-weight: bold;
-  font-size: 14px;
-}
+        .glass-effect {
+          background: rgba(44, 44, 46, 0.6);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
 
-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  transition: background-color 0.3s, border-color 0.3s;
-}
+        .input-field {
+          background-color: rgba(118, 118, 128, 0.24);
+          border: 1px solid transparent;
+          transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
 
-input:focus {
-  background-color: #e6f3ff;
-  border-color: #66aaff;
-  outline: none;
-}
+        .input-field:focus {
+          border-color: #0a84ff;
+          box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
+          outline: none;
+        }
 
-button {
-  width: 100%;
-  background-color: #0066cc;
-  color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-}
+        .input-field::placeholder {
+          color: #a1a1a6;
+        }
 
-button:hover {
-  background-color: #004d99;
-}
+        .btn-gradient {
+          background: linear-gradient(45deg, #007aff, #0a84ff);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-.error {
-  color: red;
-  font-size: 13px;
-  margin-top: -12px;
-  margin-bottom: 12px;
-}
+        .btn-gradient:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 15px rgba(0, 122, 255, 0.2);
+        }
 
-.message {
-  margin-top: 15px;
-  text-align: center;
-  font-size: 17px;
-  font-weight: bold;
-}
-
-.success {
-  color: green;
-}
-
-.fail {
-  color: red;
-}
-
-.thank-you {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  color: #2b7a2b;
-  padding: 40px 10px;
-}
-
-/* ⭐⭐⭐ Responsive Styles (Media Queries) ⭐⭐⭐ */
-
-/* For screens smaller than 600px (e.g., mobile phones) */
-@media (max-width: 600px) {
-  .container {
-    max-width: 90%; /* Adjust width to take up more space on smaller screens */
-    margin: 30px auto; /* Reduce top/bottom margin */
-    padding: 20px 15px; /* Reduce padding */
-  }
-
-  .logo {
-    width: 60px; /* Make logo slightly smaller */
-  }
-
-  .title {
-    font-size: 20px; /* Slightly smaller title */
-  }
-
-  h2 {
-    font-size: 20px; /* Slightly smaller heading */
-    margin-bottom: 20px;
-  }
-
-  input, button {
-    font-size: 14px; /* Adjust font size for inputs and buttons */
-    padding: 10px;
-  }
-
-  .message, .error {
-    font-size: 14px; /* Adjust message/error font size */
-  }
-
-  .thank-you {
-    font-size: 18px; /* Adjust thank you message font size */
-    padding: 30px 10px;
-  }
-}
-
-/* For even smaller screens (e.g., very small phones) */
-@media (max-width: 400px) {
-  .container {
-    margin: 15px auto;
-    padding: 15px 10px;
-  }
-
-  .logo {
-    width: 50px;
-  }
-
-  .title {
-    font-size: 18px;
-  }
-
-  h2 {
-    font-size: 18px;
-  }
-}
-
+        .btn-gradient:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+          transform: none;
+        }
       `}</style>
 
-      <div className="container">
-        <div className="logo-section">
-          {/* Ensure 'istelogo.png' is in your 'public' folder or provide a full path */}
-          <img src="istelogo.png" alt="ISTE Logo" className="logo" />
-          <h2 className="title">ISTE Registration</h2>
+      <div className={`w-full max-w-md glass-effect rounded-3xl p-8 ${isLoaded ? 'container-loaded' : 'opacity-0'}`}>
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 mx-auto mb-3 bg-blue-500 rounded-full flex items-center justify-center text-2xl font-bold">
+            I
+          </div>
+          <h2 className="text-2xl font-semibold text-white">ISTE Registration</h2>
         </div>
 
-        {successMessage === "Registered successfully" ? (
-          <div className="thank-you">Thank you for registering!</div>
+        {successMessage ? (
+          <div className="text-center py-8 animate-fadeIn">
+            <h3 className="text-xl text-green-400 mb-2 font-semibold">Thank You!</h3>
+            <p className="text-gray-300 mb-6">{successMessage}</p>
+            <button 
+              onClick={resetForm}
+              className="btn-gradient text-white px-6 py-3 rounded-xl font-medium"
+            >
+              Register Another Student
+            </button>
+          </div>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+              <input 
+                type="text" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleChange} 
+                placeholder="Enter your full name"
+                disabled={isSubmitting}
+                className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
+              />
+              {submitted && errors.name && <div className="text-red-400 text-sm mt-1">{errors.name}</div>}
+            </div>
 
-            <label>Full Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} />
-            {submitted && errors.name && <div className="error">{errors.name}</div>}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Admission Number</label>
+              <input 
+                type="text" 
+                name="admissionNo" 
+                value={formData.admissionNo} 
+                onChange={handleChange} 
+                placeholder="e.g., 102123"
+                disabled={isSubmitting}
+                className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
+              />
+              {submitted && errors.admissionNo && <div className="text-red-400 text-sm mt-1">{errors.admissionNo}</div>}
+            </div>
 
-            <label>Admission Number</label>
-            <input type="text" name="admissionNo" value={formData.admissionNo} onChange={handleChange} />
-            {submitted && errors.admissionNo && <div className="error">{errors.admissionNo}</div>}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Branch</label>
+              <input 
+                type="text" 
+                name="branch" 
+                value={formData.branch} 
+                onChange={handleChange} 
+                placeholder="e.g., COE, ECE, IT"
+                disabled={isSubmitting}
+                className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
+              />
+              {submitted && errors.branch && <div className="text-red-400 text-sm mt-1">{errors.branch}</div>}
+            </div>
 
-            <label>Branch</label>
-            <input type="text" name="branch" value={formData.branch} onChange={handleChange} />
-            {submitted && errors.branch && <div className="error">{errors.branch}</div>}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
+              <input 
+                type="tel" 
+                name="phone" 
+                value={formData.phone} 
+                onChange={handleChange} 
+                placeholder="10-digit mobile number"
+                disabled={isSubmitting}
+                className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
+              />
+              {submitted && errors.phone && <div className="text-red-400 text-sm mt-1">{errors.phone}</div>}
+            </div>
 
-            <label>Phone Number</label>
-            <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
-            {submitted && errors.phone && <div className="error">{errors.phone}</div>}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Email ID</label>
+              <input 
+                type="email" 
+                name="email" 
+                value={formData.email} 
+                onChange={handleChange} 
+                placeholder="your.email@example.com"
+                disabled={isSubmitting}
+                className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
+              />
+              {submitted && errors.email && <div className="text-red-400 text-sm mt-1">{errors.email}</div>}
+            </div>
 
-            <label>Email ID</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} />
-            {submitted && errors.email && <div className="error">{errors.email}</div>}
+            <button 
+              onClick={handleSubmit} 
+              disabled={isSubmitting}
+              className="btn-gradient w-full py-4 rounded-xl text-white font-medium text-base flex items-center justify-center gap-2 mt-6"
+            >
+              {isSubmitting && <div className="loading-spinner"></div>}
+              {isSubmitting ? 'Registering...' : 'Register Now'}
+            </button>
 
-            <button type="submit">Register</button>
-
-            {/* ✅ Server response message shown here below the button */}
-            {errors.general && <p className="message fail">{errors.general}</p>}
-            {successMessage && <p className="message success">{successMessage}</p>}
-
-          </form>
+            {errors.general && (
+              <div className="mt-4 p-3 bg-red-900/20 border border-red-500/30 rounded-xl text-red-400 text-center text-sm">
+                {errors.general}
+              </div>
+            )}
+          </div>
         )}
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }
 
