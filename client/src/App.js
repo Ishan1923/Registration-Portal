@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import './App.css'; // Make sure this import exists
 
-// Footer component is now defined directly in this file
+// Footer component
 function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -47,13 +48,12 @@ function App() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // This will trigger the animation once the component mounts
   useEffect(() => {
     setIsLoaded(true);
   }, []);
 
-  // Updated backend URL - FIXED: removed /api from endpoint
-  const backendBaseUrl = 'https://registration-portal-jkl7.vercel.app/';
+  // Use environment variable if available, otherwise fallback to hardcoded URL
+  const backendBaseUrl = process.env.REACT_APP_BACKEND_URL || 'https://reg-portal-backend.vercel.app';
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,7 +66,6 @@ function App() {
     if (!/^\d{6}$/.test(formData.admissionNo)) newErrors.admissionNo = "Admission number must be 6 digits";
     if (!formData.branch.trim()) newErrors.branch = "Branch is required";
     if (!/^\d{10}$/.test(formData.phone)) newErrors.phone = "Phone number must be 10 digits";
-    // Updated email validation to match backend requirements
     if (!/^([a-zA-Z0-9._%+-]+)@(gmail\.com|thapar\.edu)$/.test(formData.email)) {
       newErrors.email = "Email must be a valid '@gmail.com' or '@thapar.edu' address";
     }
@@ -77,6 +76,8 @@ function App() {
     e.preventDefault();
     setSubmitted(true);
     setIsSubmitting(true);
+    setErrors({}); // Clear previous errors
+    
     const validationErrors = validate();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -86,7 +87,9 @@ function App() {
     }
 
     try {
-      // FIXED: Changed from /api/register to /register to match backend
+      console.log('Sending request to:', `${backendBaseUrl}/register`);
+      console.log('Request data:', formData);
+      
       const res = await fetch(`${backendBaseUrl}/register`, {
         method: 'POST',
         headers: { 
@@ -94,10 +97,20 @@ function App() {
           'Accept': 'application/json'
         },
         body: JSON.stringify(formData),
+        mode: 'cors', // Explicitly set CORS mode
       });
 
-      const data = await res.json();
-      console.log('Response:', { status: res.status, data }); // Debug logging
+      console.log('Response status:', res.status);
+      console.log('Response headers:', Object.fromEntries(res.headers.entries()));
+
+      let data;
+      try {
+        data = await res.json();
+        console.log('Response data:', data);
+      } catch (parseError) {
+        console.error('Failed to parse response as JSON:', parseError);
+        throw new Error('Server returned invalid response');
+      }
 
       if (res.ok && data.success) {
         setSuccessMessage(data.message || "Registration successful! Welcome to ISTE!");
@@ -105,12 +118,24 @@ function App() {
         setErrors({});
         setSubmitted(false);
       } else {
-         setErrors({ general: data.message || data.error || "Registration failed. Please try again." });
-         setSuccessMessage('');
+        const errorMessage = data.message || data.error || `Server error: ${res.status}`;
+        setErrors({ general: errorMessage });
+        setSuccessMessage('');
       }
     } catch (err) {
       console.error("Registration error:", err);
-      setErrors({ general: "Network error. Please check your connection and try again." });
+      
+      let errorMessage = "Network error. Please check your connection and try again.";
+      
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        errorMessage = "Cannot connect to server. Please check if the backend is running.";
+      } else if (err.message.includes('CORS')) {
+        errorMessage = "CORS error. Please contact administrator.";
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setErrors({ general: errorMessage });
       setSuccessMessage('');
     } finally {
       setIsSubmitting(false);
@@ -180,6 +205,11 @@ function App() {
           color: #a1a1a6;
         }
 
+        .input-field option {
+          background-color: #2c2c2e;
+          color: white;
+        }
+
         .btn-gradient {
           background: linear-gradient(45deg, #007aff, #0a84ff);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -195,6 +225,50 @@ function App() {
           cursor: not-allowed;
           transform: none;
         }
+
+        /* Ensure Tailwind classes work */
+        .min-h-screen { min-height: 100vh; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .w-full { width: 100%; }
+        .max-w-md { max-width: 28rem; }
+        .rounded-3xl { border-radius: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .p-4 { padding: 1rem; }
+        .text-white { color: white; }
+        .text-center { text-align: center; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .w-16 { width: 4rem; }
+        .h-16 { height: 4rem; }
+        .rounded-full { border-radius: 50%; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-base { font-size: 1rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .text-gray-300 { color: rgb(209 213 219); }
+        .text-green-400 { color: rgb(74 222 128); }
+        .text-red-400 { color: rgb(248 113 113); }
+        .bg-blue-500 { background-color: rgb(59 130 246); }
+        .gap-2 { gap: 0.5rem; }
+        .block { display: block; }
       `}</style>
 
       <div className={`w-full max-w-md glass-effect rounded-3xl p-8 ${isLoaded ? 'container-loaded' : 'opacity-0'}`}>
@@ -203,10 +277,11 @@ function App() {
             I
           </div>
           <h2 className="text-2xl font-semibold text-white">ISTE Registration</h2>
+          <p className="text-sm text-gray-300 mt-1">Backend: {backendBaseUrl}</p>
         </div>
 
         {successMessage ? (
-          <div className="text-center py-8 animate-fadeIn">
+          <div className="text-center py-8">
             <h3 className="text-xl text-green-400 mb-2 font-semibold">Thank You!</h3>
             <p className="text-gray-300 mb-6">{successMessage}</p>
             <button 
@@ -256,17 +331,17 @@ function App() {
                 disabled={isSubmitting}
                 className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
               >
-                <option value="" className="bg-gray-800">Select your branch</option>
-                <option value="COE" className="bg-gray-800">COE - Computer Engineering</option>
-                <option value="ECE" className="bg-gray-800">ECE - Electronics & Communication</option>
-                <option value="EEE" className="bg-gray-800">EEE - Electrical & Electronics</option>
-                <option value="ME" className="bg-gray-800">ME - Mechanical Engineering</option>
-                <option value="CE" className="bg-gray-800">CE - Civil Engineering</option>
-                <option value="CHE" className="bg-gray-800">CHE - Chemical Engineering</option>
-                <option value="BT" className="bg-gray-800">BT - Biotechnology</option>
-                <option value="IT" className="bg-gray-800">IT - Information Technology</option>
-                <option value="CSE" className="bg-gray-800">CSE - Computer Science</option>
-                <option value="Other" className="bg-gray-800">Other</option>
+                <option value="">Select your branch</option>
+                <option value="COE">COE - Computer Engineering</option>
+                <option value="ECE">ECE - Electronics & Communication</option>
+                <option value="EEE">EEE - Electrical & Electronics</option>
+                <option value="ME">ME - Mechanical Engineering</option>
+                <option value="CE">CE - Civil Engineering</option>
+                <option value="CHE">CHE - Chemical Engineering</option>
+                <option value="BT">BT - Biotechnology</option>
+                <option value="IT">IT - Information Technology</option>
+                <option value="CSE">CSE - Computer Science</option>
+                <option value="Other">Other</option>
               </select>
               {submitted && errors.branch && <div className="text-red-400 text-sm mt-1">{errors.branch}</div>}
             </div>
