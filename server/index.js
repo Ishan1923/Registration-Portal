@@ -19,7 +19,7 @@ const allowedOrigins = [
   'https://localhost:3000',
   process.env.CLIENT_URL,
   // Add your actual frontend Vercel URL here
-  'https://your-frontend-app.vercel.app' // Replace with actual URL
+  'https://registration-portal-ofm6-55mgy6xby.vercel.app/' // Replace with actual URL
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
