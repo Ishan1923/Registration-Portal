@@ -3,7 +3,7 @@ import './App.css'; // Make sure this import exists
 
 // Footer component
 function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear(); 
 
   const footerStyle = {
     width: '100%',
