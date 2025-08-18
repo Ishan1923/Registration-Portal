@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISTE Registration Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* FIX 1: Added -webkit- prefix for gradients for maximum compatibility */
+            background: -webkit-linear-gradient(135deg, #0d1421 0%, #1a1b3a 25%, #2d1b69 50%, #4527a0 75%, #5e35b1 100%);
+            background: linear-gradient(135deg, #0d1421 0%, #1a1b3a 25%, #2d1b69 50%, #4527a0 75%, #5e35b1 100%);
+            /* FIX 2: Replaced 100vh with 100dvh to correctly handle mobile browser UI */
+            min-height: 100dvh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* FIX 3: Added -webkit- prefix for radial gradients */
+            background: 
+                -webkit-radial-gradient(circle at 20% 50%, rgba(94, 53, 177, 0.3) 0%, transparent 50%),
+                -webkit-radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                -webkit-radial-gradient(circle at 40% 80%, rgba(69, 39, 160, 0.2) 0%, transparent 50%);
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(94, 53, 177, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(69, 39, 160, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-20px, -20px) rotate(90deg); }
+            50% { transform: translate(20px, -10px) rotate(180deg); }
+            75% { transform: translate(-10px, 20px) rotate(270deg); }
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(13, 20, 33, 0.3);
+            /* FIX 4: Added -webkit-backdrop-filter for Safari compatibility */
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Main content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        
+        .form-section, .stats-section {
+            background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before, .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .form-section h2, .stats-section h2 {
+            color: white;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        select option {
+            background: #0d1421;
+            color: white;
+        }
+        
+        .submit-btn {
+            background: -webkit-linear-gradient(135deg, #4527a0 0%, #5e35b1 50%, #7b1fa2 100%);
+            background: linear-gradient(135deg, #4527a0 0%, #5e35b1 50%, #7b1fa2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .stats-section {
+            color: white;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ffffff, #e3f2fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        
+        .branch-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .branch-item {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .branch-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .branch-item .count {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .branch-item .name {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #a5d6a7;
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+        
+        .message.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ef9a9a;
+            border-color: rgba(244, 67, 54, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 4rem;
+            background: rgba(13, 20, 33, 0.3);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem 0 2rem;
+            color: white;
+        }
+
+        /* ... The rest of your CSS, HTML, and JS is unchanged ... */
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .footer-section h3 { margin-bottom: 1rem; color: #e3f2fd; }
+        .footer-section p, .footer-section a { color: rgba(255, 255, 255, 0.8); text-decoration: none; margin-bottom: 0.5rem; display: block; }
+        .footer-section a:hover { color: white; }
+        .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
+        .social-links a { background: rgba(255, 255, 255, 0.1); padding: 0.8rem; border-radius: 50%; transition: all 0.3s ease; display: flex !important; align-items: center; justify-content: center; width: 45px; height: 45px; }
+        .social-links a:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; gap: 2rem; } .nav-links { gap: 1rem; } }
+        @media (max-width: 768px) { .container { padding: 1rem; } .form-section, .stats-section { padding: 1.5rem; } .nav-container { padding: 0 1rem; flex-direction: column; gap: 1rem; } .nav-links { flex-wrap: wrap; justify-content: center; gap: 0.5rem; } .nav-links a { padding: 0.4rem 0.8rem; font-size: 0.9rem; } .branch-stats { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.8rem; } .footer-content { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; } }
+        @media (max-width: 480px) { .form-section, .stats-section { padding: 1rem; border-radius: 16px; } input, select { padding: 0.8rem 1rem; } .submit-btn { padding: 0.8rem 1.5rem; } .stat-number { font-size: 2rem; } }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <center><div class="nav-container">
+            <center><div class="logo">
+                <i class="fas fa-rocket"></i>
+                ISTE
+            </div></center>
+            {% comment %} <ul class="nav-links"> ... </ul> {% endcomment %}
+        </div></center>
+    </nav>
+
+    <div class="container">
+        <div class="header" style = "color: white; padding: 10px;">
+            <h1><i class="fas fa-graduation-cap"></i> ISTE Registration Portal</h1>
+            <p>Join the Indian Society for Technical Education and be part of innovation, technology, and excellence</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="form-section">
+                <h2><i class="fas fa-user-plus"></i> Student Registration</h2>
+                <div id="message" class="message"></div>
+                
+                <form id="registrationForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-user"></i> Full Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admission_no"><i class="fas fa-id-card"></i> Admission Number *</label>
+                        <input type="text" id="admission_no" name="admission_no" required placeholder="Enter admission number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email Address *</label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone"><i class="fas fa-phone"></i> Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="Enter phone number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="branch"><i class="fas fa-graduation-cap"></i> Branch *</label>
+                        <input type="text" id="branch" name="branch" required placeholder="Enter your branch">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="year"><i class="fas fa-calendar-alt"></i> Year of Study *</label>
+                        <select id="year" name="year" required>
+                            <option value="">Select Year</option>
+                            <option value="1">First Year</option>
+                            <option value="2">Second Year</option>
+                            <option value="3">Third Year</option>
+                            <option value="4">Fourth Year</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-rocket"></i> Register Now
+                    </button>
+                </form>
+            </div>
+            
+            <div class="stats-section">
+                <h2><i class="fas fa-chart-bar"></i> Live Statistics</h2>
+                
+                <div class="stat-item">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label"><i class="fas fa-users"></i> Total Registrations</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number" id="todayCount">0</div>
+                    <div class="stat-label"><i class="fas fa-calendar-day"></i> Registrations Today</div>
+                </div>
+                
+                <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem;">
+                    <i class="fas fa-chart-pie"></i> Branch-wise Distribution
+                </h3>
+                <div class="branch-stats" id="branchStats">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-university"></i> ISTE Chapter</h3>
+                <p>Indian Society for Technical Education</p>
+                <p>Empowering students through technology, innovation, and collaborative learning.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/iste_tiet/?hl=en"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/company/iste-thapar?originalSubdomain=in"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-link"></i> Quick Links</h3>
+                <a href="#">About ISTE</a>
+                <a href="#">Events & Workshops</a>
+                <a href="#">Technical Projects</a>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-envelope"></i> Contact Info</h3>
+                <p><i class="fas fa-globe"></i> https://istetiet.com/</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 ISTE Student Chapter. All rights reserved. | Built with ❤️ for innovation</p>
+        </div>
+    </footer>
+
+    <script>
+    function getCSRFToken() { return document.querySelector('[name=csrfmiddlewaretoken]').value; }
+    async function loadStats() { try { const response = await fetch('/register/api/stats/'); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const data = await response.json(); animateNumber('totalCount', data.total_registrations); animateNumber('todayCount', data.today_registrations); const branchStats = document.getElementById('branchStats'); branchStats.innerHTML = ''; const branchNames = { 'CSE': 'Computer Science', 'ECE': 'Electronics & Comm', 'ME': 'Mechanical', 'CE': 'Civil', 'EE': 'Electrical', 'IT': 'Information Tech' }; for (const [branch, count] of Object.entries(data.branch_wise)) { const branchDiv = document.createElement('div'); branchDiv.className = 'branch-item'; branchDiv.innerHTML = ` <div class="count">${count}</div> <div class="name">${branchNames[branch] || branch}</div> `; branchStats.appendChild(branchDiv); } } catch (error) { console.error('Error loading stats:', error); document.getElementById('totalCount').textContent = '---'; document.getElementById('todayCount').textContent = '---'; } }
+    function animateNumber(elementId, targetNumber) { const element = document.getElementById(elementId); const startNumber = parseInt(element.textContent) || 0; const duration = 1000; const steps = 60; const stepValue = (targetNumber - startNumber) / steps; let currentStep = 0; const timer = setInterval(() => { currentStep++; const currentNumber = Math.round(startNumber + (stepValue * currentStep)); element.textContent = currentNumber; if (currentStep >= steps) { element.textContent = targetNumber; clearInterval(timer); } }, duration / steps); }
+    
+    function showMessage(text, type) { const messageDiv = document.getElementById('message'); messageDiv.innerHTML = ` <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${text} `; messageDiv.className = `message ${type}`; messageDiv.style.display = 'block'; setTimeout(() => { messageDiv.style.display = 'none'; }, 5000); }
+    
+    function validateForm(data) { const nameRegex = /^[a-zA-Z\s]+$/; const admissionNoRegex = /^\d+$/; const phoneRegex = /^\d{10}$/; const emailRegex = /^[^\s@]+@(gmail\.com|thapar\.edu)$/
+    if(!data.branch.trim() || !nameRegex.test(data.branch.trim())){ return {isValid: false, message : 'Please enter valid branch'} }
+    if (!data.name.trim() || !nameRegex.test(data.name.trim())) { return { isValid: false, message: 'Please enter a valid name (letters and spaces only).' }; }
+    if(!data.email.trim() || !emailRegex.test(data.email.trim())){ return { isValid: false, message: 'Please enter a valid emial (gmail.com / thapar.edu).' }; }
+    if (!data.admission_no.trim() || !admissionNoRegex.test(data.admission_no.trim())) { return { isValid: false, message: 'Admission number must contain only numbers.' }; }
+    if (!data.phone.trim() || !phoneRegex.test(data.phone.trim())) { return { isValid: false, message: 'Phone number must be exactly 10 digits.' }; }
+    if (!data.branch) { return { isValid: false, message: 'Please select your branch.' }; }
+    if (!data.year) { return { isValid: false, message: 'Please select your year of study.' }; }
+    return { isValid: true, message: '' }; }
+    document.getElementById('registrationForm').addEventListener('submit', async (e) => { e.preventDefault(); const formData = new FormData(e.target); const data = Object.fromEntries(formData.entries()); const validationResult = validateForm(data); if (!validationResult.isValid) { showMessage(`⚠️ ${validationResult.message}`, 'error'); return; } const submitBtn = document.querySelector('.submit-btn'); const originalText = submitBtn.innerHTML; submitBtn.innerHTML = '<span class="loading"></span> Registering...'; submitBtn.disabled = true; try { const response = await fetch('/register/api/register/', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() }, body: JSON.stringify(data) }); const result = await response.json(); if (response.ok) { showMessage('🎉 Registration successful! Welcome to ISTE family!', 'success'); e.target.reset(); loadStats(); } else { showMessage(result.error || 'Registration failed. Please try again.', 'error'); } } catch (error) { showMessage('⚠️ Network error. Please check your connection and try again.', 'error'); console.error('Error:', error); } finally { submitBtn.innerHTML = originalText; submitBtn.disabled = false; } });
+    document.addEventListener('DOMContentLoaded', () => { loadStats(); });
+    setInterval(loadStats, 30000);
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function (e) { e.preventDefault(); const target = document.querySelector(this.getAttribute('href')); if (target) { target.scrollIntoView({ behavior: 'smooth' }); } }); });
+    document.querySelectorAll('.stat-item, .branch-item').forEach(item => { item.addEventListener('mouseenter', () => { item.style.transform = 'translateY(-5px) scale(1.02)'; }); item.addEventListener('mouseleave', () => { item.style.transform = 'translateY(0) scale(1)'; }); });
+    </script>
+</body>
+</html>

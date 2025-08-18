@@ -1,0 +1,18 @@
+#virtual enviornment    
+.venv
+
+#enviornment variables
+.env
+*.env
+
+#Django
+db.sqlite3
+db.sqlite3-journal
+
+#media
+/media/
+
+#vscode files
+.vscode
+
+
