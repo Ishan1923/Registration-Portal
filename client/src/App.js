@@ -53,7 +53,7 @@ function App() {
   }, []);
 
   // Updated backend URL - FIXED: removed /api from endpoint
-  const backendBaseUrl = 'https://reg-portal-backend.vercel.app';
+  const backendBaseUrl = 'https://registration-portal-jkl7.vercel.app/';
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
