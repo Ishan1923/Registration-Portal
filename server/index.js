@@ -13,21 +13,50 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
 
-// CORS configuration
+// IMPROVED CORS configuration - Allow multiple origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://localhost:3000',
+  process.env.CLIENT_URL,
+  // Add your actual frontend Vercel URL here
+  'https://your-frontend-app.vercel.app' // Replace with actual URL
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  credentials: true
 }));
 
-app.use(express.json());
+// Add preflight handling
+app.options('*', cors());
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    cors: 'enabled',
+    allowedOrigins: allowedOrigins
+  });
 });
 
-console.log("MONGO_URI from .env:", process.env.MONGO_URI);
+console.log("MONGO_URI from .env:", process.env.MONGO_URI ? "Set" : "Not Set");
+console.log("CLIENT_URL from .env:", process.env.CLIENT_URL);
+console.log("Allowed Origins:", allowedOrigins);
 
 // MongoDB connection with caching for serverless
 let cachedDb = null;
@@ -48,8 +77,8 @@ async function connectDB() {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 10000, // 10 seconds
-      socketTimeoutMS: 45000, // 45 seconds
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
       maxPoolSize: 10,
       minPoolSize: 1,
       maxIdleTimeMS: 30000,
@@ -72,14 +101,17 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'Backend is running successfully!', 
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: '1.0.0',
+    cors: 'enabled'
   });
 });
 
 // Registration endpoint
 app.post('/register', async (req, res) => {
   try {
-    await connectDB(); // Ensure DB connection
+    console.log('📝 Registration request received:', req.body);
+    
+    await connectDB();
     
     const { name, admissionNo, branch, phone, email } = req.body;
 
@@ -129,6 +161,8 @@ app.post('/register', async (req, res) => {
     const user = new User({ name, admissionNo, branch, phone, email });
     await user.save();
     
+    console.log('✅ User registered successfully:', email);
+    
     return res.status(201).json({ 
       success: true, 
       message: "Registered successfully!" 
@@ -137,7 +171,6 @@ app.post('/register', async (req, res) => {
   } catch (err) {
     console.error('❌ Registration Error:', err);
     
-    // Handle specific MongoDB errors
     if (err.name === 'ValidationError') {
       return res.status(400).json({ 
         success: false, 
@@ -159,7 +192,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// 404 handler for undefined routes
+// 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ 
     success: false, 
@@ -167,7 +200,7 @@ app.use('*', (req, res) => {
   });
 });
 
-// Centralized error handler
+// Global error handler
 app.use((err, req, res, next) => {
   console.error('Global Error Handler:', err.stack);
   res.status(500).json({ 
@@ -184,5 +217,5 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// Export for Vercel serverless functions
+// Export for Vercel
 export default app;
