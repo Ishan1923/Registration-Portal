@@ -52,7 +52,7 @@ function App() {
     setIsLoaded(true);
   }, []);
 
-  // Updated backend URL
+  // Updated backend URL - FIXED: removed /api from endpoint
   const backendBaseUrl = 'https://reg-portal-backend.vercel.app';
 
   const handleChange = e => {
@@ -66,7 +66,10 @@ function App() {
     if (!/^\d{6}$/.test(formData.admissionNo)) newErrors.admissionNo = "Admission number must be 6 digits";
     if (!formData.branch.trim()) newErrors.branch = "Branch is required";
     if (!/^\d{10}$/.test(formData.phone)) newErrors.phone = "Phone number must be 10 digits";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = "A valid email is required";
+    // Updated email validation to match backend requirements
+    if (!/^([a-zA-Z0-9._%+-]+)@(gmail\.com|thapar\.edu)$/.test(formData.email)) {
+      newErrors.email = "Email must be a valid '@gmail.com' or '@thapar.edu' address";
+    }
     return newErrors;
   };
 
@@ -83,8 +86,8 @@ function App() {
     }
 
     try {
-      // Updated endpoint to match your backend
-      const res = await fetch(`${backendBaseUrl}/api/register`, {
+      // FIXED: Changed from /api/register to /register to match backend
+      const res = await fetch(`${backendBaseUrl}/register`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -94,8 +97,9 @@ function App() {
       });
 
       const data = await res.json();
+      console.log('Response:', { status: res.status, data }); // Debug logging
 
-      if (res.ok && (data.success || res.status === 200)) {
+      if (res.ok && data.success) {
         setSuccessMessage(data.message || "Registration successful! Welcome to ISTE!");
         setFormData({ name: '', admissionNo: '', branch: '', phone: '', email: '' });
         setErrors({});
@@ -237,6 +241,7 @@ function App() {
                 onChange={handleChange} 
                 placeholder="e.g., 102123"
                 disabled={isSubmitting}
+                maxLength="6"
                 className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
               />
               {submitted && errors.admissionNo && <div className="text-red-400 text-sm mt-1">{errors.admissionNo}</div>}
@@ -244,15 +249,25 @@ function App() {
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Branch</label>
-              <input 
-                type="text" 
+              <select 
                 name="branch" 
                 value={formData.branch} 
                 onChange={handleChange} 
-                placeholder="e.g., COE, ECE, IT"
                 disabled={isSubmitting}
                 className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
-              />
+              >
+                <option value="" className="bg-gray-800">Select your branch</option>
+                <option value="COE" className="bg-gray-800">COE - Computer Engineering</option>
+                <option value="ECE" className="bg-gray-800">ECE - Electronics & Communication</option>
+                <option value="EEE" className="bg-gray-800">EEE - Electrical & Electronics</option>
+                <option value="ME" className="bg-gray-800">ME - Mechanical Engineering</option>
+                <option value="CE" className="bg-gray-800">CE - Civil Engineering</option>
+                <option value="CHE" className="bg-gray-800">CHE - Chemical Engineering</option>
+                <option value="BT" className="bg-gray-800">BT - Biotechnology</option>
+                <option value="IT" className="bg-gray-800">IT - Information Technology</option>
+                <option value="CSE" className="bg-gray-800">CSE - Computer Science</option>
+                <option value="Other" className="bg-gray-800">Other</option>
+              </select>
               {submitted && errors.branch && <div className="text-red-400 text-sm mt-1">{errors.branch}</div>}
             </div>
 
@@ -265,6 +280,7 @@ function App() {
                 onChange={handleChange} 
                 placeholder="10-digit mobile number"
                 disabled={isSubmitting}
+                maxLength="10"
                 className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
               />
               {submitted && errors.phone && <div className="text-red-400 text-sm mt-1">{errors.phone}</div>}
@@ -277,7 +293,7 @@ function App() {
                 name="email" 
                 value={formData.email} 
                 onChange={handleChange} 
-                placeholder="your.email@example.com"
+                placeholder="yourname@gmail.com or yourname@thapar.edu"
                 disabled={isSubmitting}
                 className="input-field w-full px-4 py-3 rounded-xl text-white text-base"
               />
