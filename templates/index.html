@@ -13,17 +13,15 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* FIX 1: Added -webkit- prefix for gradients for maximum compatibility */
-            background: -webkit-linear-gradient(135deg, #0d1421 0%, #1a1b3a 25%, #2d1b69 50%, #4527a0 75%, #5e35b1 100%);
-            background: linear-gradient(135deg, #0d1421 0%, #1a1b3a 25%, #2d1b69 50%, #4527a0 75%, #5e35b1 100%);
-            /* FIX 2: Replaced 100vh with 100dvh to correctly handle mobile browser UI */
-            min-height: 100dvh;
-            position: relative;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* Animated background particles */
+        /* Enhanced animated background */
         body::before {
             content: '';
             position: fixed;
@@ -31,41 +29,72 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* FIX 3: Added -webkit- prefix for radial gradients */
             background: 
-                -webkit-radial-gradient(circle at 20% 50%, rgba(94, 53, 177, 0.3) 0%, transparent 50%),
-                -webkit-radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-                -webkit-radial-gradient(circle at 40% 80%, rgba(69, 39, 160, 0.2) 0%, transparent 50%);
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(94, 53, 177, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(69, 39, 160, 0.2) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
+                radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.05) 0%, transparent 50%);
+            animation: backgroundShift 15s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(45deg, rgba(255,255,255,0.02) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.02) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.02) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.02) 75%);
+            background-size: 60px 60px;
+            background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+            animation: patternMove 20s linear infinite;
             z-index: -1;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-20px, -20px) rotate(90deg); }
-            50% { transform: translate(20px, -10px) rotate(180deg); }
-            75% { transform: translate(-10px, 20px) rotate(270deg); }
+        @keyframes backgroundShift {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                filter: hue-rotate(0deg);
+            }
+            25% { 
+                transform: translate(-2%, -2%) scale(1.02);
+                filter: hue-rotate(90deg);
+            }
+            50% { 
+                transform: translate(2%, -1%) scale(1.01);
+                filter: hue-rotate(180deg);
+            }
+            75% { 
+                transform: translate(-1%, 2%) scale(1.03);
+                filter: hue-rotate(270deg);
+            }
+        }
+
+        @keyframes patternMove {
+            0% { background-position: 0 0, 0 30px, 30px -30px, -30px 0px; }
+            100% { background-position: 60px 60px, 60px 90px, 90px 30px, 30px 60px; }
         }
 
         /* Navigation */
         .navbar {
-            background: rgba(13, 20, 33, 0.3);
-            /* FIX 4: Added -webkit-backdrop-filter for Safari compatibility */
-            -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1rem 0;
-            position: sticky;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1.2rem 0;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .nav-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -75,139 +104,203 @@
 
         .logo {
             color: white;
-            font-size: 1.8rem;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(96, 165, 250, 0.3);
         }
 
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
+        .logo-img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+            transition: transform 0.3s ease, filter 0.3s ease;
         }
 
-        .nav-links a {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            position: relative;
-        }
-
-        .nav-links a:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
+        .logo-img:hover {
+            transform: rotate(10deg) scale(1.1);
+            filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.4));
         }
 
         /* Main content */
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
+            min-height: 100vh;
+            padding-top: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 2rem;
         }
         
         .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: start;
+            width: 100%;
+            max-width: 550px;
+            padding: 0 2rem;
         }
         
-        .form-section, .stats-section {
-            background: rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 2.5rem;
-            border-radius: 24px;
+        .form-section {
+            background: rgba(20, 20, 30, 0.85);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 3rem;
+            border-radius: 28px;
             box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            animation: fadeInUp 1s ease-out;
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 60px rgba(96, 165, 250, 0.1);
+            animation: fadeInUp 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
             overflow: hidden;
         }
 
-        .form-section::before, .stats-section::before {
+        .form-section::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(96, 165, 250, 0.6) 25%, 
+                rgba(167, 139, 250, 0.6) 50%, 
+                rgba(52, 211, 153, 0.6) 75%, 
+                transparent 100%);
+            animation: shimmer 2s ease-in-out infinite;
         }
 
-        .form-section h2, .stats-section h2 {
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .form-section h2 {
             color: white;
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
+            margin-bottom: 2.5rem;
+            font-size: 2.2rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            text-align: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .form-section h2 i {
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.8rem;
+            position: relative;
         }
         
         label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        label i {
+            color: rgba(96, 165, 250, 0.8);
+            font-size: 1rem;
         }
         
         input, select {
             width: 100%;
-            padding: 1rem 1.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+            padding: 1.2rem 1.4rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
             font-size: 1rem;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(10px);
+            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background: rgba(30, 30, 45, 0.7);
             backdrop-filter: blur(10px);
             color: white;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
+            border-color: rgba(96, 165, 250, 0.6);
+            background: rgba(40, 40, 60, 0.9);
+            box-shadow: 
+                0 0 0 3px rgba(96, 165, 250, 0.15),
+                inset 0 1px 3px rgba(0, 0, 0, 0.2),
+                0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .form-group:focus-within label {
+            color: rgba(96, 165, 250, 0.9);
+        }
+
+        .form-group:focus-within label i {
+            color: rgba(96, 165, 250, 1);
+            transform: scale(1.1);
+        }
+
+        select {
+            cursor: pointer;
         }
 
         select option {
-            background: #0d1421;
+            background: #1a1a2e;
             color: white;
+            padding: 0.5rem;
         }
         
         .submit-btn {
-            background: -webkit-linear-gradient(135deg, #4527a0 0%, #5e35b1 50%, #7b1fa2 100%);
-            background: linear-gradient(135deg, #4527a0 0%, #5e35b1 50%, #7b1fa2 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06d6a0 100%);
             color: white;
-            padding: 1rem 2rem;
+            padding: 1.3rem 2.5rem;
             border: none;
-            border-radius: 16px;
+            border-radius: 20px;
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             width: 100%;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .submit-btn::before {
@@ -217,8 +310,11 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.6s ease;
         }
 
         .submit-btn:hover::before {
@@ -226,204 +322,317 @@
         }
         
         .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 15px 35px rgba(59, 130, 246, 0.4),
+                0 5px 15px rgba(139, 92, 246, 0.3);
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #059669 100%);
         }
 
         .submit-btn:active {
-            transform: translateY(-1px);
-        }
-        
-        .stats-section {
-            color: white;
-        }
-        
-        .stat-item {
-            background: rgba(255, 255, 255, 0.05);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 16px;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            transform: translateY(-2px) scale(1.01);
         }
 
-        .stat-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-        }
-        
-        .stat-number {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, #ffffff, #e3f2fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .stat-label {
-            font-size: 1rem;
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 500;
-        }
-        
-        .branch-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        
-        .branch-item {
-            background: rgba(255, 255, 255, 0.05);
-            -webkit-backdrop-filter: blur(5px);
-            backdrop-filter: blur(5px);
-            padding: 1rem;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .branch-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.05);
-        }
-
-        .branch-item .count {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .branch-item .name {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .submit-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
         }
         
         .message {
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
+            padding: 1.2rem 1.8rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
             display: none;
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-weight: 500;
+            animation: slideInDown 0.5s ease-out;
         }
         
         .message.success {
-            background: rgba(76, 175, 80, 0.2);
-            color: #a5d6a7;
-            border-color: rgba(76, 175, 80, 0.3);
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.15);
         }
         
         .message.error {
-            background: rgba(244, 67, 54, 0.2);
-            color: #ef9a9a;
-            border-color: rgba(244, 67, 54, 0.3);
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.15);
         }
 
-        /* Footer */
-        .footer {
-            margin-top: 4rem;
-            background: rgba(13, 20, 33, 0.3);
-            -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 3rem 0 2rem;
-            color: white;
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* ... The rest of your CSS, HTML, and JS is unchanged ... */
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+        .loading {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
         }
-        .footer-section h3 { margin-bottom: 1rem; color: #e3f2fd; }
-        .footer-section p, .footer-section a { color: rgba(255, 255, 255, 0.8); text-decoration: none; margin-bottom: 0.5rem; display: block; }
-        .footer-section a:hover { color: white; }
-        .social-links { display: flex; gap: 1rem; margin-top: 1rem; }
-        .social-links a { background: rgba(255, 255, 255, 0.1); padding: 0.8rem; border-radius: 50%; transition: all 0.3s ease; display: flex !important; align-items: center; justify-content: center; width: 45px; height: 45px; }
-        .social-links a:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
-        .footer-bottom { text-align: center; padding-top: 2rem; margin-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.7); }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; gap: 2rem; } .nav-links { gap: 1rem; } }
-        @media (max-width: 768px) { .container { padding: 1rem; } .form-section, .stats-section { padding: 1.5rem; } .nav-container { padding: 0 1rem; flex-direction: column; gap: 1rem; } .nav-links { flex-wrap: wrap; justify-content: center; gap: 0.5rem; } .nav-links a { padding: 0.4rem 0.8rem; font-size: 0.9rem; } .branch-stats { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.8rem; } .footer-content { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; } }
-        @media (max-width: 480px) { .form-section, .stats-section { padding: 1rem; border-radius: 16px; } input, select { padding: 0.8rem 1rem; } .submit-btn { padding: 0.8rem 1.5rem; } .stat-number { font-size: 2rem; } }
-        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(40px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        /* Enhanced Responsive design */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 100px 1.5rem 2rem;
+            }
+            
+            .main-content {
+                max-width: 500px;
+            }
+            
+            .form-section {
+                padding: 2.5rem;
+            }
+
+            .form-section h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 90px 1rem 2rem;
+            }
+            
+            .form-section {
+                padding: 2rem;
+                border-radius: 24px;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+            }
+            
+            .logo {
+                font-size: 1.7rem;
+            }
+            
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+            
+            input, select {
+                padding: 1.1rem 1.2rem;
+                font-size: 16px;
+                border-radius: 14px;
+            }
+            
+            .submit-btn {
+                padding: 1.2rem 2rem;
+                font-size: 1rem;
+                border-radius: 18px;
+            }
+            
+            .form-section h2 {
+                font-size: 1.8rem;
+                margin-bottom: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 1rem 0;
+            }
+            
+            .container {
+                padding: 80px 0.75rem 1.5rem;
+            }
+            
+            .form-section {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+            
+            .form-section h2 {
+                font-size: 1.6rem;
+                margin-bottom: 1.8rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+            
+            label {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            input, select {
+                padding: 1rem;
+                font-size: 16px;
+                border-radius: 12px;
+            }
+            
+            .submit-btn {
+                padding: 1.1rem 1.5rem;
+                font-size: 0.95rem;
+                border-radius: 16px;
+            }
+            
+            .message {
+                padding: 1rem 1.3rem;
+                font-size: 0.9rem;
+                border-radius: 14px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .form-section {
+                padding: 1.2rem;
+                margin: 0 0.5rem;
+            }
+            
+            .form-section h2 {
+                font-size: 1.4rem;
+            }
+            
+            .nav-container {
+                padding: 0 0.75rem;
+            }
+        }
+
+        /* Enhanced hover effects */
+        .form-group {
+            transition: transform 0.3s ease;
+        }
+
+        .form-group:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+        }
+
+        /* Focus visible for accessibility */
+        input:focus-visible,
+        select:focus-visible,
+        .submit-btn:focus-visible {
+            outline: 2px solid rgba(96, 165, 250, 0.6);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .form-section {
+                border: 2px solid rgba(255, 255, 255, 0.3);
+            }
+            
+            input, select {
+                border: 2px solid rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <center><div class="nav-container">
-            <center><div class="logo">
-                <i class="fas fa-rocket"></i>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-code"></i>
                 ISTE
-            </div></center>
-            {% comment %} <ul class="nav-links"> ... </ul> {% endcomment %}
-        </div></center>
+            </div>
+            <img src="https://istetiet.com/assets/logo-CN11VS0g.png" alt="ISTE Logo" class="logo-img">
+        </div>
     </nav>
 
     <div class="container">
-        <div class="header" style = "color: white; padding: 10px;">
-            <h1><i class="fas fa-graduation-cap"></i> ISTE Registration Portal</h1>
-            <p>Join the Indian Society for Technical Education and be part of innovation, technology, and excellence</p>
-        </div>
-        
         <div class="main-content">
             <div class="form-section">
                 <h2><i class="fas fa-user-plus"></i> Student Registration</h2>
                 <div id="message" class="message"></div>
                 
                 <form id="registrationForm">
-                    {% csrf_token %}
                     <div class="form-group">
                         <label for="name"><i class="fas fa-user"></i> Full Name *</label>
-                        <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                        <input type="text" id="name" name="name" required placeholder="Enter your full name" autocomplete="name">
                     </div>
                     
                     <div class="form-group">
                         <label for="admission_no"><i class="fas fa-id-card"></i> Admission Number *</label>
-                        <input type="text" id="admission_no" name="admission_no" required placeholder="Enter admission number">
+                        <input type="text" id="admission_no" name="admission_no" required placeholder="Enter admission number" autocomplete="off">
                     </div>
                     
                     <div class="form-group">
                         <label for="email"><i class="fas fa-envelope"></i> Email Address *</label>
-                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                        <input type="email" id="email" name="email" required placeholder="Enter your email" autocomplete="email">
                     </div>
                     
                     <div class="form-group">
                         <label for="phone"><i class="fas fa-phone"></i> Phone Number *</label>
-                        <input type="tel" id="phone" name="phone" required placeholder="Enter phone number">
+                        <input type="tel" id="phone" name="phone" required placeholder="Enter 10-digit phone number" autocomplete="tel">
                     </div>
                     
                     <div class="form-group">
                         <label for="branch"><i class="fas fa-graduation-cap"></i> Branch *</label>
-                        <input type="text" id="branch" name="branch" required placeholder="Enter your branch">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="year"><i class="fas fa-calendar-alt"></i> Year of Study *</label>
-                        <select id="year" name="year" required>
-                            <option value="">Select Year</option>
-                            <option value="1">First Year</option>
-                            <option value="2">Second Year</option>
-                            <option value="3">Third Year</option>
-                            <option value="4">Fourth Year</option>
-                        </select>
+                        <input type="text" id="branch" name="branch" required placeholder="Enter your branch (e.g., CSE, ECE, ME)" autocomplete="off">
                     </div>
                     
                     <button type="submit" class="submit-btn">
@@ -431,80 +640,420 @@
                     </button>
                 </form>
             </div>
-            
-            <div class="stats-section">
-                <h2><i class="fas fa-chart-bar"></i> Live Statistics</h2>
-                
-                <div class="stat-item">
-                    <div class="stat-number" id="totalCount">0</div>
-                    <div class="stat-label"><i class="fas fa-users"></i> Total Registrations</div>
-                </div>
-                
-                <div class="stat-item">
-                    <div class="stat-number" id="todayCount">0</div>
-                    <div class="stat-label"><i class="fas fa-calendar-day"></i> Registrations Today</div>
-                </div>
-                
-                <h3 style="margin: 2rem 0 1rem; font-size: 1.2rem;">
-                    <i class="fas fa-chart-pie"></i> Branch-wise Distribution
-                </h3>
-                <div class="branch-stats" id="branchStats">
-                    </div>
-            </div>
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3><i class="fas fa-university"></i> ISTE Chapter</h3>
-                <p>Indian Society for Technical Education</p>
-                <p>Empowering students through technology, innovation, and collaborative learning.</p>
-                <div class="social-links">
-                    <a href="https://www.instagram.com/iste_tiet/?hl=en"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.linkedin.com/company/iste-thapar?originalSubdomain=in"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            
-            <div class="footer-section">
-                <h3><i class="fas fa-link"></i> Quick Links</h3>
-                <a href="#">About ISTE</a>
-                <a href="#">Events & Workshops</a>
-                <a href="#">Technical Projects</a>
-            </div>
-            
-            <div class="footer-section">
-                <h3><i class="fas fa-envelope"></i> Contact Info</h3>
-                <p><i class="fas fa-globe"></i> https://istetiet.com/</p>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2025 ISTE Student Chapter. All rights reserved. | Built with ❤️ for innovation</p>
-        </div>
-    </footer>
-
     <script>
-    function getCSRFToken() { return document.querySelector('[name=csrfmiddlewaretoken]').value; }
-    async function loadStats() { try { const response = await fetch('/register/api/stats/'); if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); const data = await response.json(); animateNumber('totalCount', data.total_registrations); animateNumber('todayCount', data.today_registrations); const branchStats = document.getElementById('branchStats'); branchStats.innerHTML = ''; const branchNames = { 'CSE': 'Computer Science', 'ECE': 'Electronics & Comm', 'ME': 'Mechanical', 'CE': 'Civil', 'EE': 'Electrical', 'IT': 'Information Tech' }; for (const [branch, count] of Object.entries(data.branch_wise)) { const branchDiv = document.createElement('div'); branchDiv.className = 'branch-item'; branchDiv.innerHTML = ` <div class="count">${count}</div> <div class="name">${branchNames[branch] || branch}</div> `; branchStats.appendChild(branchDiv); } } catch (error) { console.error('Error loading stats:', error); document.getElementById('totalCount').textContent = '---'; document.getElementById('todayCount').textContent = '---'; } }
-    function animateNumber(elementId, targetNumber) { const element = document.getElementById(elementId); const startNumber = parseInt(element.textContent) || 0; const duration = 1000; const steps = 60; const stepValue = (targetNumber - startNumber) / steps; let currentStep = 0; const timer = setInterval(() => { currentStep++; const currentNumber = Math.round(startNumber + (stepValue * currentStep)); element.textContent = currentNumber; if (currentStep >= steps) { element.textContent = targetNumber; clearInterval(timer); } }, duration / steps); }
-    
-    function showMessage(text, type) { const messageDiv = document.getElementById('message'); messageDiv.innerHTML = ` <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${text} `; messageDiv.className = `message ${type}`; messageDiv.style.display = 'block'; setTimeout(() => { messageDiv.style.display = 'none'; }, 5000); }
-    
-    function validateForm(data) { const nameRegex = /^[a-zA-Z\s]+$/; const admissionNoRegex = /^\d+$/; const phoneRegex = /^\d{10}$/; const emailRegex = /^[^\s@]+@(gmail\.com|thapar\.edu)$/
-    if(!data.branch.trim() || !nameRegex.test(data.branch.trim())){ return {isValid: false, message : 'Please enter valid branch'} }
-    if (!data.name.trim() || !nameRegex.test(data.name.trim())) { return { isValid: false, message: 'Please enter a valid name (letters and spaces only).' }; }
-    if(!data.email.trim() || !emailRegex.test(data.email.trim())){ return { isValid: false, message: 'Please enter a valid emial (gmail.com / thapar.edu).' }; }
-    if (!data.admission_no.trim() || !admissionNoRegex.test(data.admission_no.trim())) { return { isValid: false, message: 'Admission number must contain only numbers.' }; }
-    if (!data.phone.trim() || !phoneRegex.test(data.phone.trim())) { return { isValid: false, message: 'Phone number must be exactly 10 digits.' }; }
-    if (!data.branch) { return { isValid: false, message: 'Please select your branch.' }; }
-    if (!data.year) { return { isValid: false, message: 'Please select your year of study.' }; }
-    return { isValid: true, message: '' }; }
-    document.getElementById('registrationForm').addEventListener('submit', async (e) => { e.preventDefault(); const formData = new FormData(e.target); const data = Object.fromEntries(formData.entries()); const validationResult = validateForm(data); if (!validationResult.isValid) { showMessage(`⚠️ ${validationResult.message}`, 'error'); return; } const submitBtn = document.querySelector('.submit-btn'); const originalText = submitBtn.innerHTML; submitBtn.innerHTML = '<span class="loading"></span> Registering...'; submitBtn.disabled = true; try { const response = await fetch('/register/api/register/', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() }, body: JSON.stringify(data) }); const result = await response.json(); if (response.ok) { showMessage('🎉 Registration successful! Welcome to ISTE family!', 'success'); e.target.reset(); loadStats(); } else { showMessage(result.error || 'Registration failed. Please try again.', 'error'); } } catch (error) { showMessage('⚠️ Network error. Please check your connection and try again.', 'error'); console.error('Error:', error); } finally { submitBtn.innerHTML = originalText; submitBtn.disabled = false; } });
-    document.addEventListener('DOMContentLoaded', () => { loadStats(); });
-    setInterval(loadStats, 30000);
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function (e) { e.preventDefault(); const target = document.querySelector(this.getAttribute('href')); if (target) { target.scrollIntoView({ behavior: 'smooth' }); } }); });
-    document.querySelectorAll('.stat-item, .branch-item').forEach(item => { item.addEventListener('mouseenter', () => { item.style.transform = 'translateY(-5px) scale(1.02)'; }); item.addEventListener('mouseleave', () => { item.style.transform = 'translateY(0) scale(1)'; }); });
+        // Enhanced form validation
+        function validateForm(data) {
+            const nameRegex = /^[a-zA-Z\s.'-]+$/;
+            const admissionNoRegex = /^[a-zA-Z0-9]+$/;
+            const phoneRegex = /^[6-9]\d{9}$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const branchRegex = /^[a-zA-Z\s&().-]+$/;
+
+            if (!data.name.trim() || !nameRegex.test(data.name.trim()) || data.name.trim().length < 2) {
+                return { isValid: false, message: 'Please enter a valid full name (minimum 2 characters, letters and spaces only).' };
+            }
+
+            if (!data.admission_no.trim() || data.admission_no.trim().length < 3) {
+                return { isValid: false, message: 'Please enter a valid admission number (minimum 3 characters).' };
+            }
+
+            if (!data.email.trim() || !emailRegex.test(data.email.trim())) {
+                return { isValid: false, message: 'Please enter a valid email address.' };
+            }
+
+            if (!data.phone.trim() || !phoneRegex.test(data.phone.trim())) {
+                return { isValid: false, message: 'Please enter a valid 10-digit Indian phone number.' };
+            }
+
+            if (!data.branch.trim() || !branchRegex.test(data.branch.trim()) || data.branch.trim().length < 2) {
+                return { isValid: false, message: 'Please enter a valid branch name (minimum 2 characters).' };
+            }
+
+            return { isValid: true, message: '' };
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i> 
+                ${text}
+            `;
+            messageDiv.className = 'message ${type}';
+            messageDiv.style.display = 'block';
+            
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Enhanced form submission
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Trim whitespace from all fields
+            Object.keys(data).forEach(key => {
+                data[key] = data[key].toString().trim();
+            });
+
+            const validationResult = validateForm(data);
+            if (!validationResult.isValid) {
+                showMessage(validationResult.message, 'error');
+                return;
+            }
+
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Registering...';
+            submitBtn.disabled = true;
+
+            try {
+                // Simulate API call (replace with actual endpoint)
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // Simulate success response
+                const success = Math.random() > 0.2; // 80% success rate for demo
+                
+                if (success) {
+                    showMessage('🎉 Registration successful! Welcome to the ISTE family!', 'success');
+                    e.target.reset();
+                    
+                    // Add confetti effect
+                    setTimeout(() => {
+                        createConfetti();
+                    }, 100);
+                } else {
+                    showMessage('Registration failed. Please try again or contact support.', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please check your connection and try again.', 'error');
+                console.error('Error:', error);
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Simple confetti effect
+        function createConfetti() {
+            const colors = ['#3b82f6', '#8b5cf6', '#06d6a0', '#f59e0b', '#ef4444'];
+            const container = document.body;
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: fixed;
+                    width: 6px;
+                    height: 6px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    top: -10px;
+                    left: ${Math.random() * 100}vw;
+                    z-index: 1000;
+                    pointer-events: none;
+                    border-radius: 50%;
+                    animation: confettiFall ${2 + Math.random() * 3}s linear forwards;
+                `;
+                
+                container.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Add confetti animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes confettiFall {
+                to {
+                    transform: translateY(100vh) rotate(720deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Enhanced input focus effects
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.style.transform = 'translateY(-2px)';
+            });
+            
+            input.addEventListener('blur', () => {
+                input.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Real-time validation feedback
+        document.getElementById('phone').addEventListener('input', (e) => {
+            const value = e.target.value.replace(/\D/g, '');
+            e.target.value = value.slice(0, 10);
+        });
+
+        document.getElementById('admission_no').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+        });
+
+        document.getElementById('name').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^a-zA-Z\s.'-]/g, '');
+        });
+
+        document.getElementById('branch').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^a-zA-Z\s&().-]/g, '');
+        });
+
+        // Prevent form submission on Enter key in input fields (except submit button)
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const form = e.target.form;
+                    const formElements = Array.from(form.elements);
+                    const currentIndex = formElements.indexOf(e.target);
+                    const nextElement = formElements[currentIndex + 1];
+                    
+                    if (nextElement && nextElement.type !== 'submit') {
+                        nextElement.focus();
+                    } else {
+                        form.querySelector('.submit-btn').focus();
+                    }
+                }
+            });
+        });
+
+        // Accessibility enhancements
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const messageDiv = document.getElementById('message');
+                if (messageDiv.style.display === 'block') {
+                    messageDiv.style.display = 'none';
+                }
+            }
+        });
+
+        // Initialize smooth animations on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.style.opacity = '0';
+            requestAnimationFrame(() => {
+                document.body.style.opacity = '1';
+                document.body.style.transition = 'opacity 0.5s ease-in-out';
+            });
+        });
+
+        // Enhanced accessibility - announce form errors to screen readers
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.style.cssText = `
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                white-space: nowrap;
+                border: 0;
+            `;
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        }
+
+        // Performance optimization - debounce input validation
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Enhanced error handling with user-friendly messages
+        const errorMessages = {
+            network: 'Unable to connect to the server. Please check your internet connection.',
+            timeout: 'Request timed out. Please try again.',
+            server: 'Server error occurred. Please try again later.',
+            validation: 'Please check your input and try again.',
+            duplicate: 'This email or admission number is already registered.',
+            generic: 'Something went wrong. Please try again.'
+        };
+
+        // Add smooth scroll behavior for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Enhanced form submission with better error handling
+        async function submitRegistration(data) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+            try {
+                // Replace with your actual API endpoint
+                const response = await fetch('/api/register/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(data),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || errorMessages.server);
+                }
+
+                return await response.json();
+            } catch (error) {
+                clearTimeout(timeoutId);
+                
+                if (error.name === 'AbortError') {
+                    throw new Error(errorMessages.timeout);
+                } else if (error.message.includes('Failed to fetch')) {
+                    throw new Error(errorMessages.network);
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        // Add visual feedback for form interactions
+        document.querySelectorAll('.form-group').forEach(group => {
+            const input = group.querySelector('input, select');
+            const label = group.querySelector('label');
+
+            input.addEventListener('focus', () => {
+                label.style.color = 'rgba(96, 165, 250, 0.9)';
+                group.style.transform = 'translateY(-1px)';
+            });
+
+            input.addEventListener('blur', () => {
+                if (!input.value) {
+                    label.style.color = 'rgba(255, 255, 255, 0.95)';
+                }
+                group.style.transform = 'translateY(0)';
+            });
+
+            input.addEventListener('input', () => {
+                if (input.value) {
+                    label.style.color = 'rgba(96, 165, 250, 0.9)';
+                } else {
+                    label.style.color = 'rgba(255, 255, 255, 0.95)';
+                }
+            });
+        });
+
+        // Add keyboard navigation enhancements
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+        });
+
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('keyboard-navigation');
+        });
+
+        // Add styles for keyboard navigation
+        const keyboardStyles = document.createElement('style');
+        keyboardStyles.textContent = `
+            .keyboard-navigation input:focus,
+            .keyboard-navigation select:focus,
+            .keyboard-navigation .submit-btn:focus {
+                outline: 2px solid rgba(96, 165, 250, 0.8) !important;
+                outline-offset: 2px !important;
+            }
+        `;
+        document.head.appendChild(keyboardStyles);
+
+        // Enhanced mobile touch interactions
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('input, select, .submit-btn').forEach(element => {
+                element.addEventListener('touchstart', () => {
+                    element.style.transform = 'scale(0.98)';
+                });
+
+                element.addEventListener('touchend', () => {
+                    element.style.transform = '';
+                });
+            });
+        }
+
+        // Add progressive enhancement for older browsers
+        if (!window.fetch) {
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/fetch/3.6.2/fetch.min.js';
+            document.head.appendChild(fallbackScript);
+        }
+
+        // Service worker registration for offline support (optional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {
+                    // Service worker registration failed, continue without offline support
+                });
+            });
+        }
+
+        // Add print styles
+        const printStyles = document.createElement('style');
+        printStyles.textContent = `
+            @media print {
+                body::before,
+                body::after,
+                .navbar,
+                .submit-btn {
+                    display: none !important;
+                }
+                
+                .container {
+                    padding-top: 0 !important;
+                }
+                
+                .form-section {
+                    box-shadow: none !important;
+                    border: 2px solid #000 !important;
+                    background: white !important;
+                    color: black !important;
+                }
+                
+                input, select {
+                    border: 1px solid #000 !important;
+                    background: white !important;
+                    color: black !important;
+                }
+                
+                .message {
+                    border: 1px solid #000 !important;
+                    background: white !important;
+                    color: black !important;
+                }
+            }
+        `;
+        document.head.appendChild(printStyles);
+
+        console.log('🚀 ISTE Registration Portal loaded successfully!');
     </script>
 </body>
 </html>
